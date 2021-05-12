@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftletUtilities",
+        "repositoryURL": "https://github.com/Appracatappra/SwiftletUtilities.git",
+        "state": {
+          "branch": null,
+          "revision": "8963fe7f97a0cea8b3977e63172ef2f0a891eb25",
+          "version": "1.0.5"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
