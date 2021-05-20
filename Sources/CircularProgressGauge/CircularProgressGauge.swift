@@ -44,6 +44,15 @@ public struct CircularProgressGauge: View {
     /// The size of the font used to display the percent complete.
     var fontSize = 12
     
+    /// The width of the Track and gauge display line.
+    var trackWidth = 5.0
+    
+    /// If `true`, the gauge will animate when it's value changes,. If false the gauge will change value without animating the change.
+    var isAnimated:Bool = true
+    
+    /// If not empty (""), display the named SF Font image given in the center of the gauge instead of the percentage complete. The image will be rendered in the `fontColor` and at the `fontSize`.
+    var systemImage:String = ""
+    
     // MARK: - Initializers
     
     /// Creates a new instance of the gauge.
@@ -53,13 +62,19 @@ public struct CircularProgressGauge: View {
     ///   - trackColor: The track (the empty part of the gauge) color.
     ///   - fontColor: The color of the font used to display the percent complete.
     ///   - fontSize: The size of the font used to display the percent complete.
-    public init(progress:Binding<Float>, gradient:Gradient = Gradient(colors: [.red, .orange, .yellow, .green]), trackColor:Color = Color.systemGray6, fontColor:Color = Color.black, fontSize:Int = 12) {
+    ///   - trackWidth: The width of the Track and gauge display line.
+    ///   - systemImage: If not empty (""), display the named SF Font  image given in the center of the gauge instead of the percentage complete. The image will be rendered in the `fontColor` and at the `fontSize`.
+    ///   - isAnimated: If `true`, the gauge will animate when it's value changes,. If false the gauge will change value without animating the change.
+    public init(progress:Binding<Float>, gradient:Gradient = Gradient(colors: [.red, .orange, .yellow, .green]), trackColor:Color = Color.systemGray6, fontColor:Color = Color.black, fontSize:Int = 12, trackWidth:Double = 5.0, systemImage:String = "", isAnimated:Bool = true) {
         // Initialize
         self.progress = progress
         self.gradient = gradient
         self.trackColor = trackColor
         self.fontColor = fontColor
         self.fontSize = fontSize
+        self.trackWidth = trackWidth
+        self.systemImage = systemImage
+        self.isAnimated = isAnimated
     }
     
     // MARK: - Control Body
@@ -67,21 +82,40 @@ public struct CircularProgressGauge: View {
     public var body: some View {
         ZStack {
             Circle()
-                .stroke(lineWidth: 5.0)
+                .stroke(lineWidth: CGFloat(trackWidth))
                 .foregroundColor(trackColor)
             
-            Circle()
-                .trim(from: 0.0, to: CGFloat(min(self.progress.wrappedValue, 1.0)))
-                .stroke(
-                        AngularGradient(gradient: gradient, center: .center, startAngle: .zero, endAngle: .degrees(360)),
-                        lineWidth: 5
-                    )
-                .rotationEffect(Angle(degrees: 270.0))
-                .animation(.linear)
+            if isAnimated {
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(min(self.progress.wrappedValue, 1.0)))
+                    .stroke(
+                            AngularGradient(gradient: gradient, center: .center, startAngle: .zero, endAngle: .degrees(360)),
+                        lineWidth: CGFloat(trackWidth)
+                        )
+                    .rotationEffect(Angle(degrees: 270.0))
+                    .animation(.linear)
+            } else {
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(min(self.progress.wrappedValue, 1.0)))
+                    .stroke(
+                            AngularGradient(gradient: gradient, center: .center, startAngle: .zero, endAngle: .degrees(360)),
+                        lineWidth: CGFloat(trackWidth)
+                        )
+                    .rotationEffect(Angle(degrees: 270.0))
+            }
             
-            Text(String(format: "%.0f%%", min(self.progress.wrappedValue, 1.0)*100.0))
-                .font(.system(size: CGFloat(fontSize)))
-                .foregroundColor(fontColor)
+            if systemImage.isEmpty {
+                Text(String(format: "%.0f%%", min(self.progress.wrappedValue, 1.0)*100.0))
+                    .font(.system(size: CGFloat(fontSize)))
+                    .foregroundColor(fontColor)
+            } else {
+                Image(systemName: systemImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundColor(fontColor)
+                    .frame(width: CGFloat(fontSize), height: CGFloat(fontSize))
+                    
+            }
         }
     }
 }
@@ -93,7 +127,11 @@ public struct CircularProgressView_Previews: PreviewProvider {
     
     /// Returns the list of previews.
     public static var previews: some View {
-        CircularProgressGauge(progress: .constant(0.7))
-            .frame(width: 50.0, height: 50.0)
+        Group {
+            CircularProgressGauge(progress: .constant(0.7))
+                .frame(width: 50.0, height: 50.0)
+            CircularProgressGauge(progress: .constant(0.7), fontSize: 24, systemImage: "pencil.tip.crop.circle")
+                .frame(width: 50.0, height: 50.0)
+        }
     }
 }
