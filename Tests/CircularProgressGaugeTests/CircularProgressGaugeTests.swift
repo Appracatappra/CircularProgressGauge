@@ -13,7 +13,7 @@ final class SwiftUtilitiesTests: XCTestCase {
     
     func testCircularProgressGauge() {
         @State var n:Float = 0.5
-        let gauge = CircularProgressGauge(progress: $n)
+        let gauge:CircularProgressGauge? = CircularProgressGauge(progress: $n)
         XCTAssert(gauge != nil)
     }
 }
