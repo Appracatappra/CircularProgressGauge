@@ -1,0 +1,12 @@
+version: 1
+builder:
+  configs:
+  - platform: ios
+    scheme: CircularProgressGauge
+  - platform: macos-xcodebuild
+    scheme: CircularProgressGauge
+  - platform: tvos
+    scheme: CircularProgressGauge
+  - platform: watchos
+    scheme: CircularProgressGauge
+  - documentation_targets: [CircularProgressGauge]
